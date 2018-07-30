@@ -94,7 +94,7 @@ namespace Rivet {
 		
 	  
       const double weight = event.weight();      
-      const Jets& jets = applyProjection<FastJets>(event, "Jets").jetsByPt(Cuts::pt>30.*GeV && Cuts::absrap < 2.5);
+      const Jets& jets = applyProjection<FastJets>(event, "Jets").jetsByPt(Cuts::pt>30.*GeV && Cuts::absrap < 6.0);
 	  
 	  //Calculating dijet mass and filling histograms
 	  //CONTROL PLOTS: Leading jet Pt spectrum
@@ -107,7 +107,7 @@ namespace Rivet {
        
 	   
 	_hist_Mjj.fill(ymaxdj, Mjj, weight);
-	_hist_Pt.fill(jets[0].momentum().absrapidity(),jets[0].momentum().pT() / GeV, weight);
+	_hist_Pt.fill(ymaxdj,jets[0].momentum().pT() / GeV, weight);
 	  
     }
 	 
