@@ -14,6 +14,9 @@ namespace Rivet {
   private:
     BinnedHistogram<double> _hist_Mjj;
     BinnedHistogram<double> _hist_Pt;
+    Histo1DPtr _h_leading_y;
+    Histo1DPtr _h_subleading_y;
+    Histo1DPtr _h_mjj_y;
 
   public:
     // @name Constructors, init, analyze, finalize
@@ -86,15 +89,21 @@ namespace Rivet {
 	    _hist_Mjj.addHistogram(etabins[i], etabins[i+1], bookHisto1D(Mjj_histos,MassHistobins));
 	
 	}
+    _h_leading_y = bookHisto1D(1, 1, 1);
+    _h_subleading_y = bookHisto1D(2, 1, 1);
+    _h_mjj_y = bookHisto1D(3, 1, 1);
+    
 	  
     }
+    
+    
 	
 	 // Analysis
     void analyze(const Event &event) {
 		
 	  
       const double weight = event.weight();      
-      const Jets& jets = applyProjection<FastJets>(event, "Jets").jetsByPt(Cuts::pt>30.*GeV && Cuts::absrap < 6.0);
+      const Jets& jets = applyProjection<FastJets>(event, "Jets").jetsByPt(Cuts::pt>30.*GeV);
 	  
 	  //Calculating dijet mass and filling histograms
 	  //CONTROL PLOTS: Leading jet Pt spectrum
@@ -108,6 +117,12 @@ namespace Rivet {
 	   
 	_hist_Mjj.fill(ymaxdj, Mjj, weight);
 	_hist_Pt.fill(ymaxdj,jets[0].momentum().pT() / GeV, weight);
+	
+	/// Extra control plots...
+	_h_leading_y->fill(jets[0].momentum().rapidity(), weight);
+	_h_subleading_y->fill(jets[1].momentum().rapidity(), weight);
+	_h_mjj_y->fill(ymaxdj, weight);
+	
 	  
     }
 	 
@@ -119,6 +134,11 @@ namespace Rivet {
       
       _hist_Mjj.scale(crossSection()/sumOfWeights()/2, this);
       _hist_Pt.scale(crossSection()/sumOfWeights()/2, this);
+      
+     /* _h_leading_y.scale(crossSection()/sumOfWeights()/2, this);
+      _h_subleading_y.scale(crossSection()/sumOfWeights()/2, this);
+      _h_mjj_y.scale(crossSection()/sumOfWeights()/2, this);
+      */
 	  
     }
  };
